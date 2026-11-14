@@ -89,6 +89,14 @@ def prepare(df: pd.DataFrame, claim: ClaimSpec, excluded_columns: list[str]) -> 
             f"{n_features} feature columns are selected; the limit is {config.MAX_FEATURES}. Exclude some columns.",
             "excluded_columns",
         )
+    if len(df) * n_features > config.MAX_CELLS:
+        raise EngineError(
+            "too_many_columns",
+            f"{len(df)} rows x {n_features} feature columns is {len(df) * n_features:,} values; the limit is "
+            f"{config.MAX_CELLS:,} so the audit finishes in time. Exclude columns (at most "
+            f"{config.MAX_CELLS // len(df)} for this file) or use fewer rows.",
+            "excluded_columns",
+        )
 
     X = df[numeric + categorical].copy()
     for name in numeric:

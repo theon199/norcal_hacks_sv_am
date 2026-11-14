@@ -67,6 +67,7 @@ PDF ingestion, GitHub import, arbitrary code replication, literature retrieval, 
 - **The upload and demo endpoints (task A2.1) were built in Phase 1,** so the setup screen runs against the live API and task B1.4 needed no hand-typed fixture.
 - **The cross-split duplicate check is informational when the feature space is coarse.** If fewer than 50% of rows have a distinct feature vector (for example, two small categorical columns), repeated vectors are expected and are reported as `info`, not `warning` or `critical`. A unit test found that the original rule marked every all-categorical dataset as critical and therefore inconclusive. This was changed before any demo fixture was generated.
 - **Charts are hand-written SVG, not Recharts.** This removes a dependency and gives exact control over axis labelling.
+- **Row cap lowered to 5,000 and a 100,000-value cell budget added (A3.4).** On the free Render instance a 20,000 × 50 audit hit the 120 s limit and 5,000 × 20 took 72 s; 2,000 × 50 took 57 s. The budget is rows × selected features ≤ 100,000 (exactly 5,000 × 20). A flat 20-feature cap was rejected because it would have broken the 30-feature Breast Cancer demo. Raise both if the backend moves to a larger instance.
 - **`AuditRequest` rejects an unusable feature column rather than dropping it,** so every excluded column is explicit in the report. The UI and the CLI pre-exclude unusable and identifier-like columns.
 
 ---
@@ -250,7 +251,7 @@ README.md                         Phase 5 (stub in Phase 0)
 
 ### 5.1 Supported data
 
-- CSV, UTF-8 (fallback latin-1), 100–20,000 rows, 2–50 feature columns after exclusions, ≤ 20 MB.
+- CSV, UTF-8 (fallback latin-1), 100–5,000 rows, 2–50 feature columns after exclusions, rows × features ≤ 100,000, ≤ 20 MB. (Lowered from 20,000 rows after the A3.4 perf check; see "Changes made during the build".)
 - Target: exactly two distinct non-null values and **no missing target values**; otherwise reject. At least 20 rows per class.
 - Column typing: numeric dtype → `numeric`. Anything else with ≤ 20 unique values → `categorical`. Anything else → `unusable` with flag `high_cardinality` or `free_text` (mean string length > 50). Constant columns → `unusable`.
 - Unusable and `identifier_like` columns are pre-ticked for exclusion in the UI. If the user un-excludes an unusable column, `POST /api/audits` rejects with `high_cardinality_feature`.

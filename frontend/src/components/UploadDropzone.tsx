@@ -26,8 +26,8 @@ export function UploadDropzone({ onFile, busy }: { onFile: (file: File) => void;
       <div>
         <h3 className="font-medium">Audit your own claim</h3>
         <p className="mt-1 text-sm text-muted">
-          Drop a CSV here or choose a file. Binary classification, tabular data, scikit-learn models. Up to 20 MB,
-          100–20,000 rows.
+          Drop a CSV here or choose a file. Binary classification, tabular data, scikit-learn models. Up to 20 MB and
+          100–5,000 rows; rows × feature columns up to 100,000 (for example 5,000 × 20 or 2,000 × 50).
         </p>
       </div>
       <div>

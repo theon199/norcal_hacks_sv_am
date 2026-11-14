@@ -23,6 +23,7 @@ const FLAG_LABELS: Record<ColumnFlag, string> = {
 
 const MIN_FEATURES = 2;
 const MAX_FEATURES = 50;
+const MAX_CELLS = 100_000; // rows × selected features; mirrors backend config.MAX_CELLS
 
 export function validateDraft(summary: DatasetSummary, draft: ClaimDraft): string | null {
   if (!draft.target) return "Choose the target column.";
@@ -39,6 +40,8 @@ export function validateDraft(summary: DatasetSummary, draft: ClaimDraft): strin
   if (unusable) return `Column “${unusable.name}” cannot be used as a feature. Exclude it to continue.`;
   if (features.length < MIN_FEATURES) return `Keep at least ${MIN_FEATURES} feature columns.`;
   if (features.length > MAX_FEATURES) return `At most ${MAX_FEATURES} feature columns are supported. Exclude some.`;
+  if (summary.n_rows * features.length > MAX_CELLS)
+    return `${summary.n_rows.toLocaleString()} rows × ${features.length} features is over the ${MAX_CELLS.toLocaleString()}-value limit that keeps audits fast. Keep at most ${Math.floor(MAX_CELLS / summary.n_rows)} feature columns.`;
   return null;
 }
 

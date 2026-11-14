@@ -90,6 +90,27 @@ def test_validation_error_codes(mixed_df, claim):
     assert code(small, claim) == "class_too_small"
 
 
+def test_size_limits():
+    rng = np.random.default_rng(0)
+
+    def frame(rows, features):
+        df = pd.DataFrame(rng.normal(size=(rows, features)), columns=[f"f{i}" for i in range(features)])
+        df["y"] = [0, 1] * (rows // 2)
+        return df
+
+    too_long = frame(config.MAX_ROWS + 2, 2).to_csv(index=False).encode()
+    with pytest.raises(EngineError) as exc:
+        load_csv(too_long)
+    assert exc.value.code == "too_many_rows"
+
+    claim = ClaimSpec(target="y", candidate="random_forest", baseline="logistic_regression", threshold_pp=5)
+    assert config.MAX_ROWS * 20 == config.MAX_CELLS          # 5,000 x 20 is exactly on budget
+    prepare(frame(2_000, 50), claim, [])                      # 100,000 values: allowed
+    with pytest.raises(EngineError) as exc:
+        prepare(frame(2_002, 50), claim, [])                  # just over budget
+    assert exc.value.code == "too_many_columns" and "at most 49" in exc.value.message
+
+
 def test_invalid_threshold_rejected_by_schema():
     for bad in (0, -1, 101):
         with pytest.raises(ValueError):

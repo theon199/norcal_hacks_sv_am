@@ -8,7 +8,11 @@ SCHEMA_VERSION = "1.0"
 # --- Dataset limits -------------------------------------------------------
 MAX_UPLOAD_MB = int(os.environ.get("MAX_UPLOAD_MB", "20"))
 MIN_ROWS = 100
-MAX_ROWS = 20_000
+# Lowered from 20,000 rows after the A3.4 perf check: on the free Render instance a 20,000 x 50 audit hit the
+# 120 s limit and 5,000 x 20 took 72 s. The cell budget (rows x selected features) keeps every allowed audit
+# near the 5,000 x 20 cost while still allowing wide, short datasets such as Breast Cancer (569 x 30).
+MAX_ROWS = 5_000
+MAX_CELLS = 100_000
 MAX_COLUMNS = 100          # at upload; the feature cap below applies at audit time
 MIN_FEATURES = 2
 MAX_FEATURES = 50
