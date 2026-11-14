@@ -3,7 +3,7 @@
 // Hand-written SVG charts. Every number drawn here comes straight from the backend report.
 // Accuracy is shown in percent; lift is shown in percentage points. They never share an axis.
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
 import { pct, pp } from "@/lib/format";
 import type { NoiseResult, SplitResult } from "@/lib/types";
@@ -17,10 +17,13 @@ const S2 = "var(--series-2)"; // baseline
 function useWidth(): [React.RefObject<HTMLDivElement | null>, number] {
   const ref = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(640);
-  useEffect(() => {
+  // Measure before the first paint so a phone never sees a 640 px chart (and a sideways-scrolling page).
+  useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const observer = new ResizeObserver(([entry]) => setWidth(Math.max(280, Math.floor(entry.contentRect.width))));
+    const measure = (w: number) => setWidth(Math.max(280, Math.floor(w)));
+    measure(el.clientWidth);
+    const observer = new ResizeObserver(([entry]) => measure(entry.contentRect.width));
     observer.observe(el);
     return () => observer.disconnect();
   }, []);

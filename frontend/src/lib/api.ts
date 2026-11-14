@@ -53,3 +53,4 @@ export const createAudit = (body: AuditRequest) =>
 export const getAudit = (id: string) => request<AuditJob>(`/api/audits/${encodeURIComponent(id)}`);
 
 export const reportJsonUrl = (id: string) => `${API_URL}/api/audits/${encodeURIComponent(id)}/report.json`;
+export const reportMdUrl = (id: string) => `${API_URL}/api/audits/${encodeURIComponent(id)}/report.md`;

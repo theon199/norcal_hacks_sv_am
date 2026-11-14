@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { AccuracyChart, LiftChart, NoiseChart } from "@/components/charts";
-import { reportJsonUrl } from "@/lib/api";
+import { reportJsonUrl, reportMdUrl } from "@/lib/api";
 import { MODEL_LABELS, pct, pp } from "@/lib/format";
 import type { AuditReport, AuditVerdict, DiagnosticFinding, SplitResult } from "@/lib/types";
 
@@ -171,6 +171,12 @@ export function Results({ report }: { report: AuditReport }) {
       {verdict && (
         <section className="rounded-lg border border-line p-5">
           <h3 className="font-medium">Why this verdict</h3>
+          {report.narrative && (
+            <p className="mt-2 text-sm">
+              {report.narrative.text}{" "}
+              <span className="text-xs text-muted">(Template summary of the measurements above; no AI involved.)</span>
+            </p>
+          )}
           <ul className="mt-2 list-disc pl-5 text-sm">
             {verdict.reasons.map((r) => (
               <li key={r}>{r}</li>
@@ -231,6 +237,9 @@ export function Results({ report }: { report: AuditReport }) {
       <div className="flex flex-wrap gap-3">
         <a href={reportJsonUrl(report.audit_id)} className="rounded-md border border-line px-4 py-2 text-sm font-medium hover:bg-surface">
           Download report (JSON)
+        </a>
+        <a href={reportMdUrl(report.audit_id)} className="rounded-md border border-line px-4 py-2 text-sm font-medium hover:bg-surface">
+          Download report (Markdown)
         </a>
         <Link href="/" className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90">
           Run new audit

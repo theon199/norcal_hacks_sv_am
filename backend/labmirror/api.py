@@ -5,10 +5,11 @@ import os
 from fastapi import FastAPI, File, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 
 from labmirror import __version__, config, jobs, storage
 from labmirror.engine import EngineError
+from labmirror.engine.report_md import to_markdown
 from labmirror.engine.validation import prepare
 from labmirror.schemas import AuditJob, AuditReport, AuditRequest, DatasetSummary, DemoDescriptor
 
@@ -104,12 +105,25 @@ def get_audit(audit_id: str) -> AuditJob:
     return jobs.read_job(audit_id)
 
 
-@app.get("/api/audits/{audit_id}/report.json", response_model=AuditReport)
-def get_report_json(audit_id: str) -> JSONResponse:
+def _finished_report(audit_id: str) -> AuditReport:
     job = jobs.read_job(audit_id)
     if job.status != "succeeded" or job.report is None:
         raise EngineError("unknown_audit", "This audit has no finished report.")
+    return job.report
+
+
+@app.get("/api/audits/{audit_id}/report.json", response_model=AuditReport)
+def get_report_json(audit_id: str) -> JSONResponse:
     return JSONResponse(
-        job.report.model_dump(mode="json"),
+        _finished_report(audit_id).model_dump(mode="json"),
         headers={"Content-Disposition": f'attachment; filename="labmirror-audit-{audit_id}.json"'},
+    )
+
+
+@app.get("/api/audits/{audit_id}/report.md")
+def get_report_md(audit_id: str) -> PlainTextResponse:
+    return PlainTextResponse(
+        to_markdown(_finished_report(audit_id)),
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="labmirror-audit-{audit_id}.md"'},
     )

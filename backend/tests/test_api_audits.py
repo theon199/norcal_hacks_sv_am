@@ -52,6 +52,12 @@ def test_audit_end_to_end_and_rerun_is_identical(client):
     assert download.status_code == 200 and "attachment" in download.headers["content-disposition"]
     assert download.json()["dataset"]["sha256"] == report["dataset"]["sha256"]
 
+    md = client.get(f"/api/audits/{job['audit_id']}/report.md")
+    assert md.status_code == 200 and md.headers["content-type"].startswith("text/markdown")
+    assert "attachment" in md.headers["content-disposition"]
+    assert report["dataset"]["sha256"] in md.text and report["verdict"]["headline"] in md.text
+    assert client.get("/api/audits/ffffffffffff/report.md").json()["error"]["code"] == "unknown_audit"
+
 
 def test_audit_request_errors(client):
     body = _demo_request(client)

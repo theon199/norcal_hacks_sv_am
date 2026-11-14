@@ -15,6 +15,7 @@ from labmirror.engine.pipelines import MODEL_LABELS, MODEL_SETTINGS, PREPROCESSI
 from labmirror.engine import verdict as verdict_rules
 from labmirror.engine.diagnostics import run_diagnostics
 from labmirror.engine.registry import initial_stages
+from labmirror.engine.report_md import build_narrative
 from labmirror.engine.tests_default import run_default_split
 from labmirror.engine.tests_noise import noise_config, run_noise
 from labmirror.engine.tests_seeds import run_seed_sensitivity
@@ -25,6 +26,7 @@ from labmirror.schemas import (
     AuditRequest,
     ClaimSpec,
     DatasetInfo,
+    Narrative,
     Stage,
     TraceEntry,
 )
@@ -265,6 +267,7 @@ def run_audit(
         tracker.finish("verdict")
 
         tracker.start("report")
+        report.narrative = Narrative(source="template", text=build_narrative(report))
         report.runtime_seconds = round(time.perf_counter() - started, 3)
         tracker.finish("report")
         return report, tracker.stages
