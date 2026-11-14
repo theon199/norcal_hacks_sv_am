@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "audit_id": "583af786e17e",
-  "created_at": "2026-11-14T06:19:56+00:00",
+  "audit_id": "086487f066c9",
+  "created_at": "2026-11-14T06:41:08+00:00",
   "dataset": {
     "sha256": "8cb8a219429fced4a467b7adfe22b42f9add2c1e700c5a295b63ada080e8abe9",
     "filename": "breast_cancer_wisconsin.csv",
@@ -140,7 +140,14 @@
         }
       }
     },
-    "noise": null
+    "noise": {
+      "distribution": "Gaussian, mean 0",
+      "scale": "0.1 x training-set standard deviation, per numeric feature",
+      "n_draws": 20,
+      "rng": "numpy default_rng(1000 + draw index)",
+      "applied_to": "numeric features of the default-split test rows only; models are not refitted",
+      "skip_rule": "features whose training standard deviation is zero or not finite are left unchanged"
+    }
   },
   "environment": {
     "python": "3.13.6",
@@ -377,10 +384,80 @@
       0.9912280701754386
     ]
   },
-  "noise": null,
-  "diagnostics": null,
-  "no_issue_statement": null,
-  "verdict": null,
+  "noise": {
+    "noise_scale": 0.1,
+    "n_draws": 20,
+    "rng_seed": 1000,
+    "perturbed_features": [
+      "mean_radius",
+      "mean_texture",
+      "mean_perimeter",
+      "mean_area",
+      "mean_smoothness",
+      "mean_compactness",
+      "mean_concavity",
+      "mean_concave_points",
+      "mean_symmetry",
+      "mean_fractal_dimension",
+      "radius_error",
+      "texture_error",
+      "perimeter_error",
+      "area_error",
+      "smoothness_error",
+      "compactness_error",
+      "concavity_error",
+      "concave_points_error",
+      "symmetry_error",
+      "fractal_dimension_error",
+      "worst_radius",
+      "worst_texture",
+      "worst_perimeter",
+      "worst_area",
+      "worst_smoothness",
+      "worst_compactness",
+      "worst_concavity",
+      "worst_concave_points",
+      "worst_symmetry",
+      "worst_fractal_dimension"
+    ],
+    "skipped_features": [],
+    "per_model": [
+      {
+        "model": "candidate",
+        "clean_accuracy": 0.9736842105263158,
+        "noisy_mean_accuracy": 0.9662280701754385,
+        "noisy_min": 0.956140350877193,
+        "noisy_max": 0.9824561403508771,
+        "delta_pp": -0.7456140350877272
+      },
+      {
+        "model": "baseline",
+        "clean_accuracy": 0.9649122807017544,
+        "noisy_mean_accuracy": 0.9710526315789473,
+        "noisy_min": 0.956140350877193,
+        "noisy_max": 0.9824561403508771,
+        "delta_pp": 0.614035087719289
+      }
+    ],
+    "clean_lift_pp": 0.8771929824561431,
+    "noisy_mean_lift_pp": -0.48245614035087314
+  },
+  "diagnostics": [],
+  "no_issue_statement": "No issues were found in the checks performed. These checks cannot establish the absence of leakage.",
+  "verdict": {
+    "label": "not_reproduced",
+    "headline": "Not reproduced in tested settings",
+    "rule_text": "Rules are evaluated in order and the first match wins. They are product labels, not statistical tests.\n1. Inconclusive: a required test (default split, seed sensitivity or diagnostics) failed, or a critical diagnostic is present.\n2. Not reproduced in tested settings: the claimed threshold was met on 0 of 5 splits.\n3. Mixed / sensitive to conditions: the threshold was met on 1, 2 or 3 of 5 splits.\n4. Mixed / sensitive to conditions: the threshold was met on at least 4 of 5 splits, but under feature noise the mean lift falls below the threshold and drops by at least 2.0 pp.\n5. Consistent with claim in tested settings: the threshold was met on at least 4 of 5 splits and rule 4 did not apply.",
+    "triggered_rules": [
+      "rule_2_not_reproduced"
+    ],
+    "reasons": [
+      "The claimed threshold of 5.0 pp was met on 0 of 5 evaluated splits.",
+      "On the default split the measured lift was +0.88 pp.",
+      "Across the 5 splits the lift ranged from -4.39 to -0.88 pp (median -1.75 pp).",
+      "Under feature noise the mean lift on the default split was -0.48 pp (clean: +0.88 pp)."
+    ]
+  },
   "trace": [
     {
       "step": "validate",
@@ -402,6 +479,27 @@
       "decision": "The claimed threshold was met on 0 of 5 evaluated splits",
       "rationale": "Same pipelines and hyperparameters refitted on five other stratified splits.",
       "evidence_ref": "seed_runs"
+    },
+    {
+      "step": "noise_robustness",
+      "actor": "engine",
+      "decision": "Under noise the mean lift was -0.48 pp (clean +0.88 pp)",
+      "rationale": "20 seeded draws of Gaussian noise at 10% of each feature's training standard deviation.",
+      "evidence_ref": "noise"
+    },
+    {
+      "step": "leakage_diagnostics",
+      "actor": "engine",
+      "decision": "Found no issues in the checks performed",
+      "rationale": "Duplicate rows across the split, identifier-like columns, suspicious names, class balance.",
+      "evidence_ref": "diagnostics"
+    },
+    {
+      "step": "verdict",
+      "actor": "engine",
+      "decision": "Not reproduced in tested settings",
+      "rationale": "Fixed rule applied to the measurements: rule_2_not_reproduced.",
+      "evidence_ref": "verdict"
     }
   ],
   "narrative": null,
@@ -412,5 +510,5 @@
     "The model random_state is held fixed across splits, so this measures split-seed sensitivity, not sensitivity to model initialization.",
     "Leakage checks are heuristics and cannot establish the absence of leakage."
   ],
-  "runtime_seconds": 0.721
+  "runtime_seconds": 0.983
 }

@@ -12,8 +12,11 @@ import pandas as pd
 from labmirror import __version__, config
 from labmirror.engine import EngineError
 from labmirror.engine.pipelines import MODEL_LABELS, MODEL_SETTINGS, PREPROCESSING_SETTINGS
-from labmirror.engine.registry import initial_stages, is_implemented
+from labmirror.engine import verdict as verdict_rules
+from labmirror.engine.diagnostics import run_diagnostics
+from labmirror.engine.registry import initial_stages
 from labmirror.engine.tests_default import run_default_split
+from labmirror.engine.tests_noise import noise_config, run_noise
 from labmirror.engine.tests_seeds import run_seed_sensitivity
 from labmirror.engine.validation import prepare
 from labmirror.schemas import (
@@ -182,9 +185,84 @@ def run_audit(
         )
         tracker.finish("seed_sensitivity")
 
-        for stage_id in ("noise_robustness", "leakage_diagnostics", "verdict"):
-            if not is_implemented(stage_id):
-                tracker.skip(stage_id, "Not available in this build yet.")
+        # Stress and diagnostic stages are non-fatal: a failure is recorded, never replaced by a made-up result.
+        failed: set[str] = set()
+
+        tracker.start("noise_robustness")
+        try:
+            report.config.noise = noise_config()
+            report.noise = run_noise(data, default)
+            if report.noise is None:
+                tracker.skip("noise_robustness", "Skipped: there are no numeric features with variation to perturb.")
+                report.trace.append(
+                    TraceEntry(
+                        step="noise_robustness",
+                        decision="Skipped the noise test",
+                        rationale="The noise model only applies to numeric features; none were usable.",
+                    )
+                )
+            else:
+                report.trace.append(
+                    TraceEntry(
+                        step="noise_robustness",
+                        decision=(
+                            f"Under noise the mean lift was {report.noise.noisy_mean_lift_pp:+.2f} pp "
+                            f"(clean {report.noise.clean_lift_pp:+.2f} pp)"
+                        ),
+                        rationale=(
+                            f"{report.noise.n_draws} seeded draws of Gaussian noise at "
+                            f"{report.noise.noise_scale:.0%} of each feature's training standard deviation."
+                        ),
+                        evidence_ref="noise",
+                    )
+                )
+                tracker.finish("noise_robustness")
+        except Exception as exc:
+            failed.add("noise_robustness")
+            report.noise = None
+            tracker.fail("noise_robustness", f"The noise test failed ({type(exc).__name__}); no result is reported.")
+
+        tracker.start("leakage_diagnostics")
+        try:
+            report.diagnostics = run_diagnostics(data, default, claim.target)
+            if not report.diagnostics:
+                report.no_issue_statement = config.NO_ISSUE_STATEMENT
+            report.trace.append(
+                TraceEntry(
+                    step="leakage_diagnostics",
+                    decision=(
+                        f"Raised {len(report.diagnostics)} finding(s)"
+                        if report.diagnostics
+                        else "Found no issues in the checks performed"
+                    ),
+                    rationale="Duplicate rows across the split, identifier-like columns, suspicious names, class balance.",
+                    evidence_ref="diagnostics",
+                )
+            )
+            tracker.finish("leakage_diagnostics")
+        except Exception as exc:
+            failed.add("leakage_diagnostics")
+            report.diagnostics = None
+            tracker.fail("leakage_diagnostics", f"Diagnostics failed ({type(exc).__name__}); no findings are reported.")
+
+        tracker.start("verdict")
+        report.verdict = verdict_rules.decide(
+            threshold_pp=claim.threshold_pp,
+            default_split=report.default_split,
+            seed_summary=report.seed_summary,
+            noise=report.noise,
+            diagnostics=report.diagnostics,
+            failed_stages=failed,
+        )
+        report.trace.append(
+            TraceEntry(
+                step="verdict",
+                decision=report.verdict.headline,
+                rationale=f"Fixed rule applied to the measurements: {report.verdict.triggered_rules[0]}.",
+                evidence_ref="verdict",
+            )
+        )
+        tracker.finish("verdict")
 
         tracker.start("report")
         report.runtime_seconds = round(time.perf_counter() - started, 3)

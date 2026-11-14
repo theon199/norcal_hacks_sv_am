@@ -26,19 +26,19 @@ STAGES: list[tuple[str, str, str, bool]] = [
         "noise_robustness",
         "Stress-testing with feature noise",
         "Adds small seeded Gaussian noise to numeric test features to see whether the advantage depends on exact values.",
-        False,
+        True,
     ),
     (
         "leakage_diagnostics",
         "Checking for leakage signs",
         "Looks for duplicated rows across train and test, identifier-like columns and suspicious feature names.",
-        False,
+        True,
     ),
     (
         "verdict",
         "Auditing the evidence",
         "Applies a fixed, published rule to the measurements. No model output decides the verdict.",
-        False,
+        True,
     ),
     (
         "report",

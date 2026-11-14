@@ -65,6 +65,8 @@ PDF ingestion, GitHub import, arbitrary code replication, literature retrieval, 
 - **Demo data lives in `backend/labmirror/demo_data/`,** not a top-level `datasets/` folder, because the Docker build context is `backend/` and the image must contain the demo files.
 - **Integer columns are flagged identifier-like only when they are a contiguous run of unique values** (a row counter), not whenever they are > 95% unique. The original rule would have pre-excluded ordinary continuous integer features such as income.
 - **The upload and demo endpoints (task A2.1) were built in Phase 1,** so the setup screen runs against the live API and task B1.4 needed no hand-typed fixture.
+- **The cross-split duplicate check is informational when the feature space is coarse.** If fewer than 50% of rows have a distinct feature vector (for example, two small categorical columns), repeated vectors are expected and are reported as `info`, not `warning` or `critical`. A unit test found that the original rule marked every all-categorical dataset as critical and therefore inconclusive. This was changed before any demo fixture was generated.
+- **Charts are hand-written SVG, not Recharts.** This removes a dependency and gives exact control over axis labelling.
 - **`AuditRequest` rejects an unusable feature column rather than dropping it,** so every excluded column is explicit in the report. The UI and the CLI pre-exclude unusable and identifier-like columns.
 
 ---

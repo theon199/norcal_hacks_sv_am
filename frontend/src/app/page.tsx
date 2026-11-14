@@ -1,11 +1,13 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { ClaimBuilder, validateDraft, type ClaimDraft } from "@/components/ClaimBuilder";
 import { DatasetHealth } from "@/components/DatasetHealth";
 import { UploadDropzone } from "@/components/UploadDropzone";
-import { ApiError, getDemos, getHealth, loadDemo, uploadDataset } from "@/lib/api";
+import { ApiError, createAudit, getDemos, getHealth, loadDemo, uploadDataset } from "@/lib/api";
+import { otherModel } from "@/lib/format";
 import type { ClaimSpec, DatasetSummary, DemoDescriptor } from "@/lib/types";
 
 type Server = "waking" | "ok" | "down";
@@ -41,6 +43,8 @@ export default function Home() {
   const [draft, setDraft] = useState<ClaimDraft | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     getHealth()
@@ -71,6 +75,33 @@ export default function Home() {
   }
 
   const problem = summary && draft ? validateDraft(summary, draft) : null;
+
+  async function run() {
+    if (!summary || !draft || problem) return;
+    setStarting(true);
+    setError(null);
+    const fraction = (raw: string) => (raw.trim() === "" ? null : Number(raw) / 100);
+    try {
+      const job = await createAudit({
+        dataset_id: summary.dataset_id,
+        claim: {
+          target: draft.target,
+          candidate: draft.candidate,
+          baseline: otherModel(draft.candidate),
+          metric: "accuracy",
+          threshold_pp: Number(draft.threshold),
+          reported_candidate_accuracy: fraction(draft.reportedCandidate),
+          reported_baseline_accuracy: fraction(draft.reportedBaseline),
+          source_note: draft.sourceNote.trim() || null,
+        },
+        excluded_columns: draft.excluded,
+      });
+      router.push(`/audit/${job.audit_id}`);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Something went wrong while starting the audit.");
+      setStarting(false);
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:py-14">
@@ -124,11 +155,6 @@ export default function Home() {
       </section>
 
       {busy && <p className="mt-4 text-sm text-muted">Reading and profiling the dataset…</p>}
-      {error && (
-        <p className="mt-4 rounded-md border border-bad bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
-          {error}
-        </p>
-      )}
 
       {summary && draft && (
         <div className="mt-8 flex flex-col gap-6">
@@ -137,16 +163,23 @@ export default function Home() {
           <div className="flex flex-wrap items-center gap-4">
             <button
               type="button"
-              disabled
-              className="rounded-md bg-accent px-5 py-2.5 font-medium text-white disabled:opacity-40"
+              disabled={Boolean(problem) || starting}
+              onClick={run}
+              className="rounded-md bg-accent px-5 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-40"
             >
-              Run stress test
+              {starting ? "Starting…" : "Run stress test"}
             </button>
             <p className="text-sm text-muted">
-              {problem ?? "The claim is valid. Running audits from this page is not wired up in this build yet."}
+              {problem ??
+                "Runs a default split, five other splits, a noise test and leakage checks. Usually under a minute."}
             </p>
           </div>
         </div>
+      )}
+      {error && (
+        <p className="mt-4 rounded-md border border-bad bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
+          {error}
+        </p>
       )}
     </main>
   );

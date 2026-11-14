@@ -41,3 +41,26 @@ DISCLOSURE = (
     'Counts such as "2 of 5 splits" describe the tested splits and are not probabilities. '
     "Passing these tests does not guarantee that a result generalizes."
 )
+
+# --- Noise test (plan §5.4) ----------------------------------------------
+NOISE_SCALE = 0.10
+NOISE_DRAWS = 20
+NOISE_RNG_SEED = 1000      # draw d uses default_rng(NOISE_RNG_SEED + d)
+
+# --- Diagnostics (plan §5.5) ---------------------------------------------
+CRITICAL_DUPLICATE_SHARE = 0.10
+COARSE_FEATURE_SPACE_SHARE = 0.50   # below this share of distinct feature vectors, repeats are expected
+IMBALANCE_WARNING_SHARE = 0.20
+IMBALANCE_INFO_SHARE = 0.35
+SMALL_TEST_CLASS = 10
+HEURISTIC_CAVEAT = "This is a heuristic check. It cannot prove leakage, and passing it cannot prove the absence of leakage."
+NO_ISSUE_STATEMENT = (
+    "No issues were found in the checks performed. These checks cannot establish the absence of leakage."
+)
+
+# --- Verdict (plan §5.6; declared before any fixture existed) -------------
+CONSISTENT_MIN_SEEDS = 4
+NOISE_MATERIALITY_PP = 2.0
+
+# --- Jobs -----------------------------------------------------------------
+MAX_QUEUED = 5

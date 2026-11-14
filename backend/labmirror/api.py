@@ -7,9 +7,10 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from labmirror import __version__, config, storage
+from labmirror import __version__, config, jobs, storage
 from labmirror.engine import EngineError
-from labmirror.schemas import DatasetSummary, DemoDescriptor
+from labmirror.engine.validation import prepare
+from labmirror.schemas import AuditJob, AuditReport, AuditRequest, DatasetSummary, DemoDescriptor
 
 app = FastAPI(title="LabMirror API", version=__version__)
 
@@ -89,3 +90,26 @@ def load_demo(demo_id: str) -> DatasetSummary:
     raw, filename = storage.load_demo_bytes(demo_id)
     storage.sweep_expired()
     return storage.save_dataset(raw, filename, is_demo=True)
+
+
+@app.post("/api/audits", response_model=AuditJob, status_code=202)
+def create_audit(request: AuditRequest) -> AuditJob:
+    df, _ = storage.load_dataset(request.dataset_id)
+    prepare(df, request.claim, request.excluded_columns)   # reject invalid claims before queueing
+    return jobs.submit(request)
+
+
+@app.get("/api/audits/{audit_id}", response_model=AuditJob)
+def get_audit(audit_id: str) -> AuditJob:
+    return jobs.read_job(audit_id)
+
+
+@app.get("/api/audits/{audit_id}/report.json", response_model=AuditReport)
+def get_report_json(audit_id: str) -> JSONResponse:
+    job = jobs.read_job(audit_id)
+    if job.status != "succeeded" or job.report is None:
+        raise EngineError("unknown_audit", "This audit has no finished report.")
+    return JSONResponse(
+        job.report.model_dump(mode="json"),
+        headers={"Content-Disposition": f'attachment; filename="labmirror-audit-{audit_id}.json"'},
+    )

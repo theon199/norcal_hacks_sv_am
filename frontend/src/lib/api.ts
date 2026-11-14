@@ -1,4 +1,4 @@
-import type { ApiErrorBody, DatasetSummary, DemoDescriptor, Health } from "./types";
+import type { ApiErrorBody, AuditJob, AuditRequest, DatasetSummary, DemoDescriptor, Health } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -42,3 +42,14 @@ export function uploadDataset(file: File) {
   form.append("file", file);
   return request<DatasetSummary>("/api/datasets", { method: "POST", body: form });
 }
+
+export const createAudit = (body: AuditRequest) =>
+  request<AuditJob>("/api/audits", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+export const getAudit = (id: string) => request<AuditJob>(`/api/audits/${encodeURIComponent(id)}`);
+
+export const reportJsonUrl = (id: string) => `${API_URL}/api/audits/${encodeURIComponent(id)}/report.json`;
