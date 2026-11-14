@@ -1,0 +1,17 @@
+[
+  {
+    "id": "breast_cancer_wisconsin",
+    "file": "breast_cancer_wisconsin.csv",
+    "title": "Breast Cancer Wisconsin (Diagnostic)",
+    "description": "569 tumors described by 30 numeric measurements. A public teaching dataset where a linear model is known to do well, which makes it a fair test of a claim that Random Forest is clearly better.",
+    "suggested_claim": {
+      "target": "tumor_class",
+      "candidate": "random_forest",
+      "baseline": "logistic_regression",
+      "metric": "accuracy",
+      "threshold_pp": 5.0,
+      "source_note": "Illustrative claim written for this example; it is not taken from a published paper."
+    },
+    "provenance_note": "Exported unmodified from scikit-learn's load_breast_cancer (UCI Machine Learning Repository). Not for clinical use."
+  }
+]

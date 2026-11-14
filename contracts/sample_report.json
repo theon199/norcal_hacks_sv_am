@@ -1,0 +1,416 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "583af786e17e",
+  "created_at": "2026-11-14T06:19:56+00:00",
+  "dataset": {
+    "sha256": "8cb8a219429fced4a467b7adfe22b42f9add2c1e700c5a295b63ada080e8abe9",
+    "filename": "breast_cancer_wisconsin.csv",
+    "n_rows": 569,
+    "features_used": [
+      "mean_radius",
+      "mean_texture",
+      "mean_perimeter",
+      "mean_area",
+      "mean_smoothness",
+      "mean_compactness",
+      "mean_concavity",
+      "mean_concave_points",
+      "mean_symmetry",
+      "mean_fractal_dimension",
+      "radius_error",
+      "texture_error",
+      "perimeter_error",
+      "area_error",
+      "smoothness_error",
+      "compactness_error",
+      "concavity_error",
+      "concave_points_error",
+      "symmetry_error",
+      "fractal_dimension_error",
+      "worst_radius",
+      "worst_texture",
+      "worst_perimeter",
+      "worst_area",
+      "worst_smoothness",
+      "worst_compactness",
+      "worst_concavity",
+      "worst_concave_points",
+      "worst_symmetry",
+      "worst_fractal_dimension"
+    ],
+    "excluded_columns": [],
+    "numeric_features": [
+      "mean_radius",
+      "mean_texture",
+      "mean_perimeter",
+      "mean_area",
+      "mean_smoothness",
+      "mean_compactness",
+      "mean_concavity",
+      "mean_concave_points",
+      "mean_symmetry",
+      "mean_fractal_dimension",
+      "radius_error",
+      "texture_error",
+      "perimeter_error",
+      "area_error",
+      "smoothness_error",
+      "compactness_error",
+      "concavity_error",
+      "concave_points_error",
+      "symmetry_error",
+      "fractal_dimension_error",
+      "worst_radius",
+      "worst_texture",
+      "worst_perimeter",
+      "worst_area",
+      "worst_smoothness",
+      "worst_compactness",
+      "worst_concavity",
+      "worst_concave_points",
+      "worst_symmetry",
+      "worst_fractal_dimension"
+    ],
+    "categorical_features": [],
+    "class_counts": {
+      "benign": 357,
+      "malignant": 212
+    },
+    "positive_class": "malignant"
+  },
+  "claim": {
+    "target": "tumor_class",
+    "candidate": "random_forest",
+    "baseline": "logistic_regression",
+    "metric": "accuracy",
+    "threshold_pp": 5.0,
+    "reported_candidate_accuracy": null,
+    "reported_baseline_accuracy": null,
+    "source_note": null
+  },
+  "claim_sentence": "Audit whether Random Forest exceeds Logistic Regression by at least 5.0 percentage points of test-set accuracy on this dataset.",
+  "config": {
+    "test_size": 0.2,
+    "default_seed": 42,
+    "seeds": [
+      11,
+      23,
+      37,
+      51,
+      79
+    ],
+    "preprocessing": {
+      "numeric": [
+        "SimpleImputer(strategy='median')",
+        "StandardScaler()"
+      ],
+      "categorical": [
+        "SimpleImputer(strategy='most_frequent')",
+        "OneHotEncoder(handle_unknown='ignore')"
+      ],
+      "fitted_on": "training rows only, inside a scikit-learn Pipeline",
+      "shared_by_all_models": true
+    },
+    "models": {
+      "candidate": {
+        "key": "random_forest",
+        "estimator": "RandomForestClassifier",
+        "params": {
+          "n_estimators": 100,
+          "max_depth": null,
+          "random_state": 0,
+          "n_jobs": 1
+        }
+      },
+      "baseline": {
+        "key": "logistic_regression",
+        "estimator": "LogisticRegression",
+        "params": {
+          "C": 1.0,
+          "solver": "lbfgs",
+          "max_iter": 1000,
+          "random_state": 0
+        }
+      },
+      "dummy": {
+        "key": "dummy",
+        "estimator": "DummyClassifier",
+        "params": {
+          "strategy": "most_frequent"
+        }
+      }
+    },
+    "noise": null
+  },
+  "environment": {
+    "python": "3.13.6",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scikit_learn": "1.9.1",
+    "labmirror": "0.1.0"
+  },
+  "default_split": {
+    "seed": 42,
+    "n_train": 455,
+    "n_test": 114,
+    "test_class_counts": {
+      "malignant": 42,
+      "benign": 72
+    },
+    "scores": [
+      {
+        "model": "candidate",
+        "estimator": "RandomForestClassifier",
+        "accuracy": 0.9736842105263158,
+        "balanced_accuracy": 0.9642857142857143,
+        "f1": 0.9629629629629629
+      },
+      {
+        "model": "baseline",
+        "estimator": "LogisticRegression",
+        "accuracy": 0.9649122807017544,
+        "balanced_accuracy": 0.9573412698412699,
+        "f1": 0.9512195121951219
+      },
+      {
+        "model": "dummy",
+        "estimator": "DummyClassifier",
+        "accuracy": 0.631578947368421,
+        "balanced_accuracy": 0.5,
+        "f1": 0.0
+      }
+    ],
+    "lift_pp": 0.8771929824561431,
+    "candidate_wins": true,
+    "meets_threshold": false
+  },
+  "seed_runs": [
+    {
+      "seed": 11,
+      "n_train": 455,
+      "n_test": 114,
+      "test_class_counts": {
+        "malignant": 42,
+        "benign": 72
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9649122807017544,
+          "balanced_accuracy": 0.9523809523809523,
+          "f1": 0.95
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9912280701754386,
+          "balanced_accuracy": 0.9880952380952381,
+          "f1": 0.9879518072289156
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.631578947368421,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": -2.631578947368418,
+      "candidate_wins": false,
+      "meets_threshold": false
+    },
+    {
+      "seed": 23,
+      "n_train": 455,
+      "n_test": 114,
+      "test_class_counts": {
+        "malignant": 42,
+        "benign": 72
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.956140350877193,
+          "balanced_accuracy": 0.9603174603174602,
+          "f1": 0.9425287356321839
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9649122807017544,
+          "balanced_accuracy": 0.9573412698412699,
+          "f1": 0.9512195121951219
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.631578947368421,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": -0.8771929824561431,
+      "candidate_wins": false,
+      "meets_threshold": false
+    },
+    {
+      "seed": 37,
+      "n_train": 455,
+      "n_test": 114,
+      "test_class_counts": {
+        "malignant": 42,
+        "benign": 72
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9298245614035088,
+          "balanced_accuracy": 0.9196428571428572,
+          "f1": 0.9024390243902439
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9736842105263158,
+          "balanced_accuracy": 0.9642857142857143,
+          "f1": 0.9629629629629629
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.631578947368421,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": -4.385964912280704,
+      "candidate_wins": false,
+      "meets_threshold": false
+    },
+    {
+      "seed": 51,
+      "n_train": 455,
+      "n_test": 114,
+      "test_class_counts": {
+        "malignant": 42,
+        "benign": 72
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9649122807017544,
+          "balanced_accuracy": 0.9722222222222222,
+          "f1": 0.9545454545454546
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9824561403508771,
+          "balanced_accuracy": 0.9761904761904762,
+          "f1": 0.975609756097561
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.631578947368421,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": -1.754385964912275,
+      "candidate_wins": false,
+      "meets_threshold": false
+    },
+    {
+      "seed": 79,
+      "n_train": 455,
+      "n_test": 114,
+      "test_class_counts": {
+        "malignant": 42,
+        "benign": 72
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9473684210526315,
+          "balanced_accuracy": 0.9434523809523809,
+          "f1": 0.9285714285714286
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9649122807017544,
+          "balanced_accuracy": 0.9623015873015872,
+          "f1": 0.9523809523809523
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.631578947368421,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": -1.7543859649122862,
+      "candidate_wins": false,
+      "meets_threshold": false
+    }
+  ],
+  "seed_summary": {
+    "n_seeds": 5,
+    "n_candidate_wins": 0,
+    "n_meets_threshold": 0,
+    "median_lift_pp": -1.7543859649122862,
+    "min_lift_pp": -4.385964912280704,
+    "max_lift_pp": -0.8771929824561431,
+    "candidate_accuracy_range": [
+      0.9298245614035088,
+      0.9649122807017544
+    ],
+    "baseline_accuracy_range": [
+      0.9649122807017544,
+      0.9912280701754386
+    ]
+  },
+  "noise": null,
+  "diagnostics": null,
+  "no_issue_statement": null,
+  "verdict": null,
+  "trace": [
+    {
+      "step": "validate",
+      "actor": "engine",
+      "decision": "Accepted 30 features and a binary target",
+      "rationale": "Positive class for F1 is the minority class 'malignant'.",
+      "evidence_ref": "dataset"
+    },
+    {
+      "step": "default_split",
+      "actor": "engine",
+      "decision": "Measured a lift of +0.88 pp on the default split",
+      "rationale": "One stratified 80/20 split with seed 42; all models share the same rows.",
+      "evidence_ref": "default_split"
+    },
+    {
+      "step": "seed_sensitivity",
+      "actor": "engine",
+      "decision": "The claimed threshold was met on 0 of 5 evaluated splits",
+      "rationale": "Same pipelines and hyperparameters refitted on five other stratified splits.",
+      "evidence_ref": "seed_runs"
+    }
+  ],
+  "narrative": null,
+  "limitations": [
+    "LabMirror independently re-evaluates a claim on the data and protocol shown here. It is not a reproduction of any published study unless that study's exact data, splits and code were used. Verdict labels are product labels derived from the stated rule; they are not statistical significance results. Counts such as \"2 of 5 splits\" describe the tested splits and are not probabilities. Passing these tests does not guarantee that a result generalizes.",
+    "Only binary classification on tabular CSV data with the two listed scikit-learn models is supported.",
+    "Hyperparameters are fixed and untuned; a tuned model could behave differently.",
+    "The model random_state is held fixed across splits, so this measures split-seed sensitivity, not sensitivity to model initialization.",
+    "Leakage checks are heuristics and cannot establish the absence of leakage."
+  ],
+  "runtime_seconds": 0.721
+}

@@ -2,25 +2,52 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #16181d;
+  --surface: #f5f6f8;
+  --line: #d9dce3;
+  --muted: #5b6270;
+  --accent: #1f5fbf;
+  --accent-soft: #e8f0fc;
+  --warn: #8a5a00;
+  --warn-soft: #fdf1d6;
+  --bad: #b3261e;
+  --bad-soft: #fdeceb;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0e1014;
+    --foreground: #e8eaee;
+    --surface: #181b21;
+    --line: #2c313b;
+    --muted: #9aa2b1;
+    --accent: #6ea4f5;
+    --accent-soft: #16243b;
+    --warn: #f0c060;
+    --warn-soft: #33290f;
+    --bad: #f2938c;
+    --bad-soft: #3a1816;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }

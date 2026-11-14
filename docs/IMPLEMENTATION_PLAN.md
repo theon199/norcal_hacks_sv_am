@@ -60,6 +60,13 @@ PDF ingestion, GitHub import, arbitrary code replication, literature retrieval, 
 5. **No per-IP rate limiting in P0.** The bounded job queue (1 running, 5 waiting, then HTTP 429) is the abuse control. Add `slowapi` in Phase 4 if there is time.
 6. **Temporary storage is ephemeral.** Run links die on redeploy. Acceptable for a hackathon; stated in the README.
 
+### Changes made during the build
+
+- **Demo data lives in `backend/labmirror/demo_data/`,** not a top-level `datasets/` folder, because the Docker build context is `backend/` and the image must contain the demo files.
+- **Integer columns are flagged identifier-like only when they are a contiguous run of unique values** (a row counter), not whenever they are > 95% unique. The original rule would have pre-excluded ordinary continuous integer features such as income.
+- **The upload and demo endpoints (task A2.1) were built in Phase 1,** so the setup screen runs against the live API and task B1.4 needed no hand-typed fixture.
+- **`AuditRequest` rejects an unusable feature column rather than dropping it,** so every excluded column is explicit in the report. The UI and the CLI pre-exclude unusable and identifier-like columns.
+
 ---
 
 ## 2. Architecture
