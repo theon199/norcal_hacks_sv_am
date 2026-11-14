@@ -18,15 +18,18 @@ def test_health(client):
 
 def test_demo_flow(client):
     demos = client.get("/api/demos").json()
-    assert demos and "file" not in demos[0]
-    ClaimSpec.model_validate(demos[0]["suggested_claim"])
-    r = client.post(f"/api/datasets/demo/{demos[0]['id']}")
-    assert r.status_code == 201
-    summary = r.json()
-    assert summary["is_demo"] and summary["n_rows"] == 569
-    assert demos[0]["suggested_claim"]["target"] in summary["binary_target_candidates"]
-    df, stored = storage.load_dataset(summary["dataset_id"])
-    assert len(df) == 569 and stored.sha256 == summary["sha256"]
+    rows = {"sensor_fault_synthetic": 400, "breast_cancer_wisconsin": 569}
+    assert [d["id"] for d in demos] == list(rows)
+    for demo in demos:
+        assert "file" not in demo
+        ClaimSpec.model_validate(demo["suggested_claim"])
+        r = client.post(f"/api/datasets/demo/{demo['id']}")
+        assert r.status_code == 201
+        summary = r.json()
+        assert summary["is_demo"] and summary["n_rows"] == rows[demo["id"]]
+        assert demo["suggested_claim"]["target"] in summary["binary_target_candidates"]
+        df, stored = storage.load_dataset(summary["dataset_id"])
+        assert len(df) == rows[demo["id"]] and stored.sha256 == summary["sha256"]
 
 
 def test_upload_and_errors(client, mixed_df):

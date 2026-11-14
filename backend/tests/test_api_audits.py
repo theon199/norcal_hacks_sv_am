@@ -25,8 +25,8 @@ def _wait(client, audit_id, seconds=90):
     raise AssertionError("audit did not finish")
 
 
-def _demo_request(client):
-    demo = client.get("/api/demos").json()[0]
+def _demo_request(client, demo_id="breast_cancer_wisconsin"):
+    demo = next(d for d in client.get("/api/demos").json() if d["id"] == demo_id)
     dataset_id = client.post(f"/api/datasets/demo/{demo['id']}").json()["dataset_id"]
     return {"dataset_id": dataset_id, "claim": demo["suggested_claim"], "excluded_columns": []}
 

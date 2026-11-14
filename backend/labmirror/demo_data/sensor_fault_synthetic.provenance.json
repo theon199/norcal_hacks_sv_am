@@ -1,0 +1,31 @@
+{
+  "file": "sensor_fault_synthetic.csv",
+  "sha256": "e9e379043ccc5bd9c03561defabef08a481897560f19fd82deea0f37fccfe966",
+  "generator": "sklearn.datasets.make_classification",
+  "generator_parameters": {
+    "n_samples": 400,
+    "n_features": 8,
+    "n_informative": 4,
+    "n_redundant": 2,
+    "n_repeated": 0,
+    "n_classes": 2,
+    "n_clusters_per_class": 2,
+    "flip_y": 0.05,
+    "class_sep": 1.0
+  },
+  "generator_seed": 7,
+  "rounding_decimals": 4,
+  "target_mapping": {
+    "0": "no",
+    "1": "yes"
+  },
+  "selection_criterion": "First generator seed in 0..199 where the production engine finds the claim (Random Forest beats Logistic Regression by >= 5.0 pp accuracy) met on the default split (seed 42) and on 1-3 of the 5 alternate splits, with no critical diagnostic.",
+  "candidates_examined": 8,
+  "candidates_meeting_default_split": 5,
+  "selected_result": {
+    "default_lift_pp": 7.499999999999996,
+    "alternate_splits_meeting_threshold": 2,
+    "verdict": "mixed"
+  },
+  "honesty_note": "This dataset was selected to illustrate split sensitivity. It is synthetic and does not describe real machines. All numbers shown in LabMirror are recomputed live."
+}
