@@ -24,14 +24,18 @@ def _datasets_dir() -> Path:
 
 
 def sweep_expired() -> None:
-    """Delete uploaded datasets older than the retention window."""
+    """Delete uploaded datasets and audit runs older than the retention window. Bundled demos live in
+    DEMO_DIR and are never touched. Runs older than a day are long finished (the job limit is 120 s)."""
     cutoff = time.time() - config.RETENTION_HOURS * 3600
-    for child in _datasets_dir().iterdir():
-        try:
-            if child.is_dir() and child.stat().st_mtime < cutoff:
-                shutil.rmtree(child, ignore_errors=True)
-        except OSError:
+    for parent in (_datasets_dir(), config.DATA_DIR / "runs"):
+        if not parent.is_dir():
             continue
+        for child in parent.iterdir():
+            try:
+                if child.is_dir() and child.stat().st_mtime < cutoff:
+                    shutil.rmtree(child, ignore_errors=True)
+            except OSError:
+                continue
 
 
 def safe_filename(name: str | None) -> str:

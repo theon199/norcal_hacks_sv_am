@@ -58,3 +58,22 @@ def test_unknown_dataset_id_cannot_escape_storage(client):
     for bad in ("../../etc", "zzzzzzzzzzzz", ""):
         with pytest.raises(EngineError):
             storage.load_dataset(bad)
+
+
+def test_retention_sweep_removes_old_datasets_and_runs(client, tmp_path):
+    import os
+    import time
+
+    old, fresh = time.time() - (config.RETENTION_HOURS + 1) * 3600, time.time()
+    paths = {}
+    for kind in ("datasets", "runs"):
+        for age, stamp in (("old", old), ("fresh", fresh)):
+            p = tmp_path / kind / f"{kind}-{age}"
+            p.mkdir(parents=True)
+            (p / "x.json").write_text("{}")
+            os.utime(p, (stamp, stamp))
+            paths[(kind, age)] = p
+    storage.sweep_expired()
+    for (kind, age), p in paths.items():
+        assert p.exists() == (age == "fresh"), (kind, age)
+    assert (config.DEMO_DIR / "demos.json").exists()
