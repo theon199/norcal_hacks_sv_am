@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AiPreviewPanel } from "@/components/AiPreviewPanel";
 import { AccuracyChart, LiftChart, NoiseChart } from "@/components/charts";
 import { reportJsonUrl, reportMdUrl } from "@/lib/api";
 import { MODEL_LABELS, pct, pp } from "@/lib/format";
@@ -186,6 +187,8 @@ export function Results({ report }: { report: AuditReport }) {
           <pre className="mt-1 whitespace-pre-wrap font-sans text-xs text-muted">{verdict.rule_text}</pre>
         </section>
       )}
+
+      <AiPreviewPanel report={report} />
 
       <section className="rounded-lg border border-line p-5">
         <h3 className="font-medium">Audit trace</h3>
