@@ -1,6 +1,6 @@
 {
   "file": "sensor_fault_synthetic.csv",
-  "sha256": "e9e379043ccc5bd9c03561defabef08a481897560f19fd82deea0f37fccfe966",
+  "sha256": "12db1061fe7ce69f47e4676c8d8d8953f3c8b4bf9c59ce301dbb9098bba9f6e3",
   "generator": "sklearn.datasets.make_classification",
   "generator_parameters": {
     "n_samples": 400,
@@ -14,7 +14,56 @@
     "class_sep": 1.0
   },
   "generator_seed": 7,
-  "rounding_decimals": 4,
+  "readings": [
+    {
+      "column": "temperature_c",
+      "center": 68.0,
+      "scale": 2.5,
+      "decimals": 1
+    },
+    {
+      "column": "vibration_mm_s",
+      "center": 4.0,
+      "scale": 0.4,
+      "decimals": 2
+    },
+    {
+      "column": "oil_pressure_bar",
+      "center": 5.0,
+      "scale": 0.4,
+      "decimals": 2
+    },
+    {
+      "column": "motor_current_amps",
+      "center": 15.0,
+      "scale": 1.2,
+      "decimals": 2
+    },
+    {
+      "column": "rotation_speed_rpm",
+      "center": 1450.0,
+      "scale": 25.0,
+      "decimals": 0
+    },
+    {
+      "column": "oil_quality_pct",
+      "center": 75.0,
+      "scale": 2.5,
+      "decimals": 1
+    },
+    {
+      "column": "sound_level_db",
+      "center": 72.0,
+      "scale": 1.5,
+      "decimals": 1
+    },
+    {
+      "column": "hours_since_service",
+      "center": 600.0,
+      "scale": 60.0,
+      "decimals": 0
+    }
+  ],
   "target_mapping": {
     "0": "no",
     "1": "yes"
@@ -24,8 +73,8 @@
   "candidates_meeting_default_split": 5,
   "selected_result": {
     "default_lift_pp": 7.499999999999996,
-    "alternate_splits_meeting_threshold": 2,
+    "alternate_splits_meeting_threshold": 3,
     "verdict": "mixed"
   },
-  "honesty_note": "This dataset was selected to illustrate split sensitivity. It is synthetic and does not describe real machines. All numbers shown in LabMirror are recomputed live."
+  "honesty_note": "This dataset was selected to illustrate split sensitivity. It is synthetic and does not describe real machines; the column names and units were assigned for readability. All numbers shown in LabMirror are recomputed live."
 }

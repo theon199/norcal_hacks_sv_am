@@ -2,8 +2,8 @@
   {
     "id": "sensor_fault_synthetic",
     "file": "sensor_fault_synthetic.csv",
-    "title": "Machine fault sensors (synthetic)",
-    "description": "400 machines, 8 sensor readings, predict whether a fault occurred. On the usual 80/20 split Random Forest looks clearly better. Chosen because it shows split sensitivity: watch what happens on other splits.",
+    "title": "Factory machine breakdowns (synthetic)",
+    "description": "400 factory machines, each with 8 everyday readings: temperature, vibration, oil pressure, motor current, speed, oil quality, sound level and hours since last service. The question: will this machine break down? The claim is that a Random Forest model predicts breakdowns at least 5 points more accurately than a simpler Logistic Regression model. On the usual single test it looks true. Watch what happens when the test is repeated.",
     "suggested_claim": {
       "target": "machine_fault",
       "candidate": "random_forest",
@@ -12,7 +12,7 @@
       "threshold_pp": 5.0,
       "source_note": "Illustrative claim written for this example; it is not taken from a published paper."
     },
-    "provenance_note": "Synthetic data from scikit-learn's make_classification, selected from generated candidates because the claim holds on the default split but not on most others (scripts/make_demo_fixture.py; search recorded in sensor_fault_synthetic.provenance.json). Does not describe real machines."
+    "provenance_note": "Made-up data generated with scikit-learn's make_classification; the column names and units were added for readability and do not describe real machines. It was picked from generated candidates because the claim holds on the usual test but not reliably on others (scripts/make_demo_fixture.py; search recorded in sensor_fault_synthetic.provenance.json)."
   },
   {
     "id": "breast_cancer_wisconsin",

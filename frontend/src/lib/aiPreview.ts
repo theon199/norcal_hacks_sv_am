@@ -23,7 +23,7 @@ export interface AiPreview {
 }
 
 const SENSOR_FAULT: AiPreview = {
-  sha256: "e9e379043ccc5bd9c03561defabef08a481897560f19fd82deea0f37fccfe966",
+  sha256: "12db1061fe7ce69f47e4676c8d8d8953f3c8b4bf9c59ce301dbb9098bba9f6e3",
   claim: {
     target: "machine_fault",
     candidate: "random_forest",
@@ -35,26 +35,28 @@ const SENSOR_FAULT: AiPreview = {
     {
       test_id: "seed_sensitivity",
       rationale:
-        "400 rows leaves only 80 in the test set, so a single split can swing the lift by several points. Check whether the margin survives other splits first.",
+        "Only 80 machines are held back for testing, so one lucky or unlucky draw can make either model look good. Reshuffle which machines are tested and repeat, first.",
     },
     {
       test_id: "noise_robustness",
       rationale:
-        "All eight features are continuous sensor readings. Real sensors drift, so check whether the advantage depends on exact values.",
+        "Real gauges drift and read a little off. Check whether the advantage survives small errors in the temperature, vibration and other readings.",
     },
     {
       test_id: "leakage_diagnostics",
       rationale:
-        "Repeated readings from the same machine could appear on both sides of the split and inflate either model. Look for duplicates and ID-like columns.",
+        "If the same machine shows up in both the practice data and the test, the test is too easy. Look for copied rows and ID-like columns.",
     },
   ],
   narrative:
-    "The claim is that Random Forest beats Logistic Regression by at least 5 pp of accuracy at predicting machine faults. " +
-    "On the default split it does: 91.3% against 83.8%, a lift of +7.50 pp. But that split was one of the more favorable ones. " +
-    "Refitted on other splits, Random Forest stayed ahead on 5 of 5, yet the lift reached the claimed margin on only 2 of 5, " +
-    "ranging from +1.25 pp to +5.00 pp with a median of +3.75 pp. Noise on the sensor readings barely moved the default-split lift " +
-    "(+7.06 pp against +7.50 pp clean), and the leakage checks found nothing. So the direction holds, but the size of the advantage " +
-    "depends on which rows land in the test set. Under the fixed rule, the verdict is Mixed.",
+    "The claim: Random Forest predicts machine breakdowns at least 5 points more accurately than Logistic Regression. " +
+    "On the usual single test it does, scoring 91.3% against 83.8%, a gap of 7.5 points. " +
+    "But that test uses only 80 machines, so luck matters. When LabMirror reshuffled which machines were tested and ran it five more times, " +
+    "Random Forest reached the promised 5-point gap on only 3 of 5 tries. On those three it landed exactly on the line, " +
+    "and on one try the two models tied. Adding small errors to the readings, like a slightly miscalibrated gauge, barely changed " +
+    "the result (a gap of 6.9 points instead of 7.5), and no signs of data leakage were found. " +
+    "Bottom line: Random Forest is usually a little better here, but \"at least 5 points better\" depends on which machines " +
+    "happen to be in the test. The verdict is Mixed.",
 };
 
 const PREVIEWS = [SENSOR_FAULT];

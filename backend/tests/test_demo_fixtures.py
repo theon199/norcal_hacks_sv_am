@@ -35,7 +35,7 @@ def test_synthetic_fixture_matches_provenance():
 
 @pytest.mark.parametrize(
     "demo_id, verdict, k",
-    [("sensor_fault_synthetic", "mixed", 2), ("breast_cancer_wisconsin", "not_reproduced", 0)],
+    [("sensor_fault_synthetic", "mixed", 3), ("breast_cancer_wisconsin", "not_reproduced", 0)],
 )
 def test_demo_verdicts(demo_id, verdict, k):
     report = _audit(next(d for d in DEMOS if d["id"] == demo_id))

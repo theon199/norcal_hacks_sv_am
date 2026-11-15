@@ -10,7 +10,6 @@ the website. No value is edited after generation. The provenance file records th
 """
 
 import hashlib
-import io
 import json
 import sys
 from pathlib import Path
@@ -41,18 +40,32 @@ GENERATOR = dict(
     class_sep=1.0,
 )
 SEED_RANGE = range(0, 200)
-DECIMALS = 4
+
+# Each generated column becomes a named machine reading: value = center + scale * generated value,
+# rounded to a realistic precision. The mapping is fixed before the search runs; it gives the columns
+# plausible units for the demo and is the only transformation applied.
+# (column name, center, scale, decimals)
+READINGS = [
+    ("temperature_c", 68.0, 2.5, 1),
+    ("vibration_mm_s", 4.0, 0.4, 2),
+    ("oil_pressure_bar", 5.0, 0.4, 2),
+    ("motor_current_amps", 15.0, 1.2, 2),
+    ("rotation_speed_rpm", 1450.0, 25.0, 0),
+    ("oil_quality_pct", 75.0, 2.5, 1),
+    ("sound_level_db", 72.0, 1.5, 1),
+    ("hours_since_service", 600.0, 60.0, 0),
+]
 
 CLAIM = ClaimSpec(target=TARGET, candidate="random_forest", baseline="logistic_regression", threshold_pp=THRESHOLD_PP)
 
 
 def build_csv(seed: int) -> bytes:
     X, y = make_classification(**GENERATOR, random_state=seed)
-    df = pd.DataFrame(X.round(DECIMALS), columns=[f"sensor_{i + 1}" for i in range(X.shape[1])])
-    df[TARGET] = pd.Series(y).map({0: "no", 1: "yes"})
-    buf = io.StringIO()
-    df.to_csv(buf, index=False, lineterminator="\n", float_format=f"%.{DECIMALS}f")
-    return buf.getvalue().encode("utf-8")
+    lines = [",".join([name for name, *_ in READINGS] + [TARGET])]
+    for row, label in zip(X, y):
+        cells = [f"{center + scale * value:.{decimals}f}" for value, (_, center, scale, decimals) in zip(row, READINGS)]
+        lines.append(",".join(cells + ["yes" if label == 1 else "no"]))
+    return ("\n".join(lines) + "\n").encode("utf-8")
 
 
 def main(out_dir: Path) -> int:
@@ -86,7 +99,9 @@ def main(out_dir: Path) -> int:
                 "generator": "sklearn.datasets.make_classification",
                 "generator_parameters": GENERATOR,
                 "generator_seed": seed,
-                "rounding_decimals": DECIMALS,
+                "readings": [
+                    {"column": n, "center": c, "scale": k, "decimals": d} for n, c, k, d in READINGS
+                ],
                 "target_mapping": {"0": "no", "1": "yes"},
                 "selection_criterion": (
                     f"First generator seed in {SEED_RANGE.start}..{SEED_RANGE.stop - 1} where the production engine "
@@ -102,13 +117,14 @@ def main(out_dir: Path) -> int:
                 },
                 "honesty_note": (
                     "This dataset was selected to illustrate split sensitivity. It is synthetic and does not "
-                    "describe real machines. All numbers shown in LabMirror are recomputed live."
+                    "describe real machines; the column names and units were assigned for readability. All numbers shown in LabMirror are recomputed live."
                 ),
             }
             (out_dir / "sensor_fault_synthetic.provenance.json").write_text(
                 json.dumps(provenance, indent=2) + "\n", encoding="utf-8"
             )
             print(json.dumps(provenance, indent=2))
+            print(df.describe().loc[["min", "mean", "max"]].round(2).to_string(), file=sys.stderr)
             return 0
     print(f"No qualifying seed in {examined} candidates ({default_passes} met the default split).", file=sys.stderr)
     return 1

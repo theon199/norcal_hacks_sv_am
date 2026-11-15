@@ -20,12 +20,12 @@ Scope: binary classification · tabular CSV · Random Forest vs Logistic Regress
 
 ## Try it in one minute
 
-1. Open the live app and click **Try this example** on *Machine fault sensors (synthetic)*.
+1. Open the live app and click **Try this example** on *Factory machine breakdowns (synthetic)*. It has 400 machines with eight readings each (temperature, vibration, oil pressure, motor current, speed, oil quality, sound level, hours since service) and asks whether a machine will break down.
 2. Click **Run stress test** and watch the stages run.
-3. The default split shows Random Forest ahead by **+7.5 pp**, which clears the claimed +5 pp. Across five other splits, Random Forest stays ahead every time, but the claim's margin holds on only **2 of 5**. Verdict: **Mixed: sensitive to conditions**.
+3. The default split shows Random Forest ahead by **+7.5 pp**, which clears the claimed +5 pp. Across five other splits, the claim's margin holds on **3 of 5**, each time exactly at +5.0 pp, and on one split the two models tie. Verdict: **Mixed: sensitive to conditions**.
 4. Download the Markdown or JSON report and compare it with the screen.
 
-That dataset was **selected** to show split sensitivity, and the app says so. [`scripts/make_demo_fixture.py`](scripts/make_demo_fixture.py) generated candidates with scikit-learn's `make_classification` and kept the first one where the production engine found the claim met on the default split but on only one to three other splits. The full search is recorded in [`sensor_fault_synthetic.provenance.json`](backend/labmirror/demo_data/sensor_fault_synthetic.provenance.json). No value was edited, and every number on screen is recomputed live.
+That dataset was **selected** to show split sensitivity, and the app says so. [`scripts/make_demo_fixture.py`](scripts/make_demo_fixture.py) generated candidates with scikit-learn's `make_classification` and kept the first one where the production engine found the claim met on the default split but on only one to three other splits. The generated columns were given machine-reading names and units with one fixed scale per column, chosen before the search; the data does not describe real machines. The full search is recorded in [`sensor_fault_synthetic.provenance.json`](backend/labmirror/demo_data/sensor_fault_synthetic.provenance.json). No value was edited, and every number on screen is recomputed live.
 
 The second example, **Breast Cancer Wisconsin** (exported unmodified from scikit-learn), is a contrasting case: the claim fails on all five splits, so the verdict is *Not reproduced in tested settings*.
 
