@@ -51,16 +51,16 @@ function AuditView() {
   const done = job?.status === "succeeded" && job.report;
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
-      <header className="flex flex-wrap items-baseline justify-between gap-2">
-        <Link href="/" className="font-mono text-sm text-accent">
-          ← LabMirror
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-24 pt-6 sm:pt-8">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <Link href="/" className="text-sm font-medium text-accent hover:underline">
+          ← New audit
         </Link>
         <p className="font-mono text-xs text-muted">audit {id}</p>
-      </header>
+      </div>
 
       {error && (
-        <p className="mt-6 rounded-md border border-bad bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
+        <p className="mt-6 rounded-[10px] border border-bad/40 bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
           {error}
         </p>
       )}
@@ -68,9 +68,17 @@ function AuditView() {
 
       {job && (
         <div className="mt-6 flex flex-col gap-6">
+          {(job.status === "queued" || job.status === "running") && (
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Running the stress test</h1>
+              <p className="mt-2 max-w-2xl text-muted">
+                Each stage below runs on the compute server. The verdict appears here when the last one finishes.
+              </p>
+            </div>
+          )}
           {job.error && (
-            <div className="rounded-md border border-bad bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
-              <p className="font-medium">{job.status === "timeout" ? "The audit ran out of time." : "The audit could not finish."}</p>
+            <div className="rounded-[10px] border border-bad/40 bg-bad-soft px-4 py-3 text-sm text-bad" role="alert">
+              <p className="font-semibold">{job.status === "timeout" ? "The audit ran out of time." : "The audit could not finish."}</p>
               <p className="mt-1">{job.error.message}</p>
               <p className="mt-2">
                 No results are shown because none were completed.{" "}
@@ -85,7 +93,7 @@ function AuditView() {
             <>
               <Results report={job.report!} />
               <details>
-                <summary className="cursor-pointer text-sm font-medium">What was run, step by step</summary>
+                <summary className="cursor-pointer text-sm font-semibold">What was run, step by step</summary>
                 <div className="mt-3">
                   <StageTimeline job={job} />
                 </div>
