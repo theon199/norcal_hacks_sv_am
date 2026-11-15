@@ -1,0 +1,451 @@
+{
+  "schema_version": "1.0",
+  "audit_id": "bb16cabc7dda",
+  "created_at": "2026-11-15T06:22:51+00:00",
+  "dataset": {
+    "sha256": "12db1061fe7ce69f47e4676c8d8d8953f3c8b4bf9c59ce301dbb9098bba9f6e3",
+    "filename": "sensor_fault_synthetic.csv",
+    "n_rows": 400,
+    "features_used": [
+      "temperature_c",
+      "vibration_mm_s",
+      "oil_pressure_bar",
+      "motor_current_amps",
+      "rotation_speed_rpm",
+      "oil_quality_pct",
+      "sound_level_db",
+      "hours_since_service"
+    ],
+    "excluded_columns": [],
+    "numeric_features": [
+      "temperature_c",
+      "vibration_mm_s",
+      "oil_pressure_bar",
+      "motor_current_amps",
+      "rotation_speed_rpm",
+      "oil_quality_pct",
+      "sound_level_db",
+      "hours_since_service"
+    ],
+    "categorical_features": [],
+    "class_counts": {
+      "no": 192,
+      "yes": 208
+    },
+    "positive_class": "no"
+  },
+  "claim": {
+    "target": "machine_fault",
+    "candidate": "random_forest",
+    "baseline": "logistic_regression",
+    "metric": "accuracy",
+    "threshold_pp": 5.0,
+    "reported_candidate_accuracy": null,
+    "reported_baseline_accuracy": null,
+    "source_note": "Illustrative claim written for this example; it is not taken from a published paper."
+  },
+  "claim_sentence": "Audit whether Random Forest exceeds Logistic Regression by at least 5.0 percentage points of test-set accuracy on this dataset.",
+  "config": {
+    "test_size": 0.2,
+    "default_seed": 42,
+    "seeds": [
+      11,
+      23,
+      37,
+      51,
+      79
+    ],
+    "preprocessing": {
+      "numeric": [
+        "SimpleImputer(strategy='median')",
+        "StandardScaler()"
+      ],
+      "categorical": [
+        "SimpleImputer(strategy='most_frequent')",
+        "OneHotEncoder(handle_unknown='ignore')"
+      ],
+      "fitted_on": "training rows only, inside a scikit-learn Pipeline",
+      "shared_by_all_models": true
+    },
+    "models": {
+      "candidate": {
+        "key": "random_forest",
+        "estimator": "RandomForestClassifier",
+        "params": {
+          "n_estimators": 100,
+          "max_depth": null,
+          "random_state": 0,
+          "n_jobs": 1
+        }
+      },
+      "baseline": {
+        "key": "logistic_regression",
+        "estimator": "LogisticRegression",
+        "params": {
+          "C": 1.0,
+          "solver": "lbfgs",
+          "max_iter": 1000,
+          "random_state": 0
+        }
+      },
+      "dummy": {
+        "key": "dummy",
+        "estimator": "DummyClassifier",
+        "params": {
+          "strategy": "most_frequent"
+        }
+      }
+    },
+    "noise": {
+      "distribution": "Gaussian, mean 0",
+      "scale": "0.1 x training-set standard deviation, per numeric feature",
+      "n_draws": 20,
+      "rng": "numpy default_rng(1000 + draw index)",
+      "applied_to": "numeric features of the default-split test rows only; models are not refitted",
+      "skip_rule": "features whose training standard deviation is zero or not finite are left unchanged"
+    }
+  },
+  "environment": {
+    "python": "3.13.11",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "scikit_learn": "1.9.1",
+    "labmirror": "0.1.0"
+  },
+  "default_split": {
+    "seed": 42,
+    "n_train": 320,
+    "n_test": 80,
+    "test_class_counts": {
+      "no": 38,
+      "yes": 42
+    },
+    "scores": [
+      {
+        "model": "candidate",
+        "estimator": "RandomForestClassifier",
+        "accuracy": 0.9125,
+        "balanced_accuracy": 0.9116541353383458,
+        "f1": 0.9066666666666666
+      },
+      {
+        "model": "baseline",
+        "estimator": "LogisticRegression",
+        "accuracy": 0.8375,
+        "balanced_accuracy": 0.8352130325814536,
+        "f1": 0.821917808219178
+      },
+      {
+        "model": "dummy",
+        "estimator": "DummyClassifier",
+        "accuracy": 0.525,
+        "balanced_accuracy": 0.5,
+        "f1": 0.0
+      }
+    ],
+    "lift_pp": 7.499999999999996,
+    "candidate_wins": true,
+    "meets_threshold": true
+  },
+  "seed_runs": [
+    {
+      "seed": 11,
+      "n_train": 320,
+      "n_test": 80,
+      "test_class_counts": {
+        "no": 38,
+        "yes": 42
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.85,
+          "balanced_accuracy": 0.8508771929824561,
+          "f1": 0.8461538461538461
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.8007518796992481,
+          "f1": 0.7948717948717948
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.525,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": 4.999999999999993,
+      "candidate_wins": true,
+      "meets_threshold": true
+    },
+    {
+      "seed": 23,
+      "n_train": 320,
+      "n_test": 80,
+      "test_class_counts": {
+        "no": 38,
+        "yes": 42
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.8625,
+          "balanced_accuracy": 0.862781954887218,
+          "f1": 0.8571428571428571
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.8625,
+          "balanced_accuracy": 0.8615288220551378,
+          "f1": 0.8533333333333334
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.525,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": 0.0,
+      "candidate_wins": false,
+      "meets_threshold": false
+    },
+    {
+      "seed": 37,
+      "n_train": 320,
+      "n_test": 80,
+      "test_class_counts": {
+        "no": 38,
+        "yes": 42
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9,
+          "balanced_accuracy": 0.9010025062656641,
+          "f1": 0.8974358974358975
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.875,
+          "balanced_accuracy": 0.8771929824561404,
+          "f1": 0.875
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.525,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": 2.500000000000002,
+      "candidate_wins": true,
+      "meets_threshold": false
+    },
+    {
+      "seed": 51,
+      "n_train": 320,
+      "n_test": 80,
+      "test_class_counts": {
+        "no": 38,
+        "yes": 42
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.85,
+          "balanced_accuracy": 0.855889724310777,
+          "f1": 0.8604651162790697
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.8045112781954887,
+          "f1": 0.8095238095238095
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.525,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": 4.999999999999993,
+      "candidate_wins": true,
+      "meets_threshold": true
+    },
+    {
+      "seed": 79,
+      "n_train": 320,
+      "n_test": 80,
+      "test_class_counts": {
+        "no": 38,
+        "yes": 42
+      },
+      "scores": [
+        {
+          "model": "candidate",
+          "estimator": "RandomForestClassifier",
+          "accuracy": 0.9625,
+          "balanced_accuracy": 0.963032581453634,
+          "f1": 0.961038961038961
+        },
+        {
+          "model": "baseline",
+          "estimator": "LogisticRegression",
+          "accuracy": 0.9125,
+          "balanced_accuracy": 0.912907268170426,
+          "f1": 0.9090909090909091
+        },
+        {
+          "model": "dummy",
+          "estimator": "DummyClassifier",
+          "accuracy": 0.525,
+          "balanced_accuracy": 0.5,
+          "f1": 0.0
+        }
+      ],
+      "lift_pp": 5.000000000000004,
+      "candidate_wins": true,
+      "meets_threshold": true
+    }
+  ],
+  "seed_summary": {
+    "n_seeds": 5,
+    "n_candidate_wins": 4,
+    "n_meets_threshold": 3,
+    "median_lift_pp": 4.999999999999993,
+    "min_lift_pp": 0.0,
+    "max_lift_pp": 5.000000000000004,
+    "candidate_accuracy_range": [
+      0.85,
+      0.9625
+    ],
+    "baseline_accuracy_range": [
+      0.8,
+      0.9125
+    ]
+  },
+  "noise": {
+    "noise_scale": 0.1,
+    "n_draws": 20,
+    "rng_seed": 1000,
+    "perturbed_features": [
+      "temperature_c",
+      "vibration_mm_s",
+      "oil_pressure_bar",
+      "motor_current_amps",
+      "rotation_speed_rpm",
+      "oil_quality_pct",
+      "sound_level_db",
+      "hours_since_service"
+    ],
+    "skipped_features": [],
+    "per_model": [
+      {
+        "model": "candidate",
+        "clean_accuracy": 0.9125,
+        "noisy_mean_accuracy": 0.9025000000000001,
+        "noisy_min": 0.875,
+        "noisy_max": 0.925,
+        "delta_pp": -0.9999999999999898
+      },
+      {
+        "model": "baseline",
+        "clean_accuracy": 0.8375,
+        "noisy_mean_accuracy": 0.8337499999999999,
+        "noisy_min": 0.8125,
+        "noisy_max": 0.85,
+        "delta_pp": -0.3750000000000142
+      }
+    ],
+    "clean_lift_pp": 7.499999999999996,
+    "noisy_mean_lift_pp": 6.8750000000000195
+  },
+  "diagnostics": [],
+  "no_issue_statement": "No issues were found in the checks performed. These checks cannot establish the absence of leakage.",
+  "verdict": {
+    "label": "mixed",
+    "headline": "Mixed: sensitive to conditions",
+    "rule_text": "Rules are evaluated in order and the first match wins. They are product labels, not statistical tests.\n1. Inconclusive: a required test (default split, seed sensitivity or diagnostics) failed, or a critical diagnostic is present.\n2. Not reproduced in tested settings: the claimed threshold was met on 0 of 5 splits.\n3. Mixed / sensitive to conditions: the threshold was met on 1, 2 or 3 of 5 splits.\n4. Mixed / sensitive to conditions: the threshold was met on at least 4 of 5 splits, but under feature noise the mean lift falls below the threshold and drops by at least 2.0 pp.\n5. Consistent with claim in tested settings: the threshold was met on at least 4 of 5 splits and rule 4 did not apply.",
+    "triggered_rules": [
+      "rule_3_mixed_seeds"
+    ],
+    "reasons": [
+      "The claimed threshold of 5.0 pp was met on 3 of 5 evaluated splits.",
+      "On the default split the measured lift was +7.50 pp.",
+      "Across the 5 splits the lift ranged from +0.00 to +5.00 pp (median +5.00 pp).",
+      "Under feature noise the mean lift on the default split was +6.88 pp (clean: +7.50 pp)."
+    ]
+  },
+  "trace": [
+    {
+      "step": "validate",
+      "actor": "engine",
+      "decision": "Accepted 8 features and a binary target",
+      "rationale": "Positive class for F1 is the minority class 'no'.",
+      "evidence_ref": "dataset"
+    },
+    {
+      "step": "default_split",
+      "actor": "engine",
+      "decision": "Measured a lift of +7.50 pp on the default split",
+      "rationale": "One stratified 80/20 split with seed 42; all models share the same rows.",
+      "evidence_ref": "default_split"
+    },
+    {
+      "step": "seed_sensitivity",
+      "actor": "engine",
+      "decision": "The claimed threshold was met on 3 of 5 evaluated splits",
+      "rationale": "Same pipelines and hyperparameters refitted on five other stratified splits.",
+      "evidence_ref": "seed_runs"
+    },
+    {
+      "step": "noise_robustness",
+      "actor": "engine",
+      "decision": "Under noise the mean lift was +6.88 pp (clean +7.50 pp)",
+      "rationale": "20 seeded draws of Gaussian noise at 10% of each feature's training standard deviation.",
+      "evidence_ref": "noise"
+    },
+    {
+      "step": "leakage_diagnostics",
+      "actor": "engine",
+      "decision": "Found no issues in the checks performed",
+      "rationale": "Duplicate rows across the split, identifier-like columns, suspicious names, class balance.",
+      "evidence_ref": "diagnostics"
+    },
+    {
+      "step": "verdict",
+      "actor": "engine",
+      "decision": "Mixed: sensitive to conditions",
+      "rationale": "Fixed rule applied to the measurements: rule_3_mixed_seeds.",
+      "evidence_ref": "verdict"
+    }
+  ],
+  "narrative": {
+    "source": "template",
+    "text": "On the default split (seed 42), Random Forest scored 91.3% and Logistic Regression scored 83.8%, a lift of +7.50 pp against a claimed 5.0 pp, so the claim was met on that split. Across 5 other splits the claimed threshold was met on 3 of 5, and Random Forest was ahead at all on 4 of 5; the lift ranged from +0.00 pp to +5.00 pp (median +5.00 pp). With Gaussian noise added to the numeric test features (20 draws), the mean lift on the default split was +6.88 pp, compared with +7.50 pp on clean data. No issues were found in the checks performed. These checks cannot establish the absence of leakage. Under the fixed verdict rule, the result is: Mixed: sensitive to conditions."
+  },
+  "limitations": [
+    "LabMirror independently re-evaluates a claim on the data and protocol shown here. It is not a reproduction of any published study unless that study's exact data, splits and code were used. Verdict labels are product labels derived from the stated rule; they are not statistical significance results. Counts such as \"2 of 5 splits\" describe the tested splits and are not probabilities. Passing these tests does not guarantee that a result generalizes.",
+    "Only binary classification on tabular CSV data with the two listed scikit-learn models is supported.",
+    "Hyperparameters are fixed and untuned; a tuned model could behave differently.",
+    "The model random_state is held fixed across splits, so this measures split-seed sensitivity, not sensitivity to model initialization.",
+    "Leakage checks are heuristics and cannot establish the absence of leakage."
+  ],
+  "runtime_seconds": 0.764
+}

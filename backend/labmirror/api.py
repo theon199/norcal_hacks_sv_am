@@ -67,7 +67,7 @@ def health() -> dict:
     return {
         "status": "ok",
         "version": __version__,
-        "llm_enabled": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "llm_enabled": config.LLM_ENABLED,
     }
 
 

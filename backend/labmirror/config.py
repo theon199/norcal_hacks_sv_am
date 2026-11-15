@@ -66,5 +66,11 @@ NO_ISSUE_STATEMENT = (
 CONSISTENT_MIN_SEEDS = 4
 NOISE_MATERIALITY_PP = 2.0
 
+# --- Optional LLM layer (plan Phase 4) -----------------------------------
+# Off unless both are set. Opt-in so a deploy with a key does not show AI text before the UI labels it.
+LLM_ENABLED = bool(os.environ.get("ANTHROPIC_API_KEY")) and os.environ.get("LABMIRROR_LLM") == "1"
+LLM_MODEL = os.environ.get("LLM_MODEL", "claude-opus-5-5")
+LLM_TIMEOUT_S = float(os.environ.get("LLM_TIMEOUT_S", "20"))
+
 # --- Jobs -----------------------------------------------------------------
 MAX_QUEUED = 5

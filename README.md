@@ -13,7 +13,7 @@ LabMirror takes a falsifiable machine-learning claim, such as *"Random Forest be
 LabMirror **independently re-evaluates** a claim on the data and protocol shown on screen. It is **not a reproduction** of a published study unless that study's exact data, splits and code were used, and the interface never says otherwise. Accuracies you type in from a paper are shown as "reported by user, not verified"; everything else is "measured by LabMirror".
 
 - **Verdicts are product labels, not statistical tests.** They come from a fixed, published rule (below). LabMirror reports no p-values and makes no significance claims.
-- **There is no AI in the scoring path.** Every number comes from scikit-learn running on your data. The verdict, the summary paragraph and the order of tests are deterministic. No language model is used in the current build.
+- **There is no AI in the scoring path.** Every number comes from scikit-learn running on your data, and the verdict comes from the fixed rule. An optional Claude layer (off by default, see `LABMIRROR_LLM` below) can do two things only: a *Skeptical Auditor* that reorders the three stress tests (all of them always run), and an *Evidence Writer* that replaces the template summary when every number in its text is found in the report. It is sent the claim, column names and kinds, and aggregate results, never raw rows. Any failure falls back to the fixed order and the template.
 - **Users cannot run arbitrary code.** Only an allowlisted set of seven stages exists, with fixed hyperparameters.
 
 Scope: binary classification · tabular CSV · Random Forest vs Logistic Regression (plus a most-frequent-class sanity baseline) · accuracy as the claimed metric, with balanced accuracy and F1 reported alongside.
@@ -106,6 +106,10 @@ npm run dev                   # http://localhost:3000, talks to http://localhost
 | `DATA_DIR` | backend | `backend/data` | Where uploads and runs are stored |
 | `MAX_UPLOAD_MB` | backend | `20` | Upload size limit |
 | `JOB_TIMEOUT_S` | backend | `120` | Per-audit time limit |
+| `LABMIRROR_LLM` | backend | unset | Set to `1` (with `ANTHROPIC_API_KEY`) to turn on the Skeptical Auditor and Evidence Writer |
+| `ANTHROPIC_API_KEY` | backend | unset | Claude API key; stays server-side |
+| `LLM_MODEL` | backend | `claude-opus-5-5` | Claude model for both roles |
+| `LLM_TIMEOUT_S` | backend | `20` | Per-call timeout; no retries, so both calls fit inside the job limit |
 
 ### Command line, tests and checks
 
