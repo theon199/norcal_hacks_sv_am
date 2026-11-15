@@ -80,10 +80,10 @@ function Frame({ title, subtitle, legend, note, children }: {
   children: ReactNode;
 }) {
   return (
-    <figure className="card p-4 sm:p-6">
+    <figure className="rounded-lg border border-line p-4 sm:p-5">
       <figcaption>
-        <h2 className="font-semibold">{title}</h2>
-        <p className="mt-1 max-w-3xl text-sm text-muted">{subtitle}</p>
+        <h3 className="font-medium">{title}</h3>
+        <p className="mt-0.5 text-sm text-muted">{subtitle}</p>
       </figcaption>
       {legend && <div className="mt-3">{legend}</div>}
       <div className="mt-2">{children}</div>
@@ -200,7 +200,7 @@ export function LiftChart({ defaultSplit, seedRuns, thresholdPp }: {
   );
 }
 
-/** Paired accuracy of both models on each split. Dot plot, so a non-zero axis start is legitimate, and stated. */
+/** Paired accuracy of both models on each split. Dot plot, so a non-zero axis start is legitimate — and stated. */
 export function AccuracyChart({ defaultSplit, seedRuns, candidateLabel, baselineLabel }: {
   defaultSplit: SplitResult;
   seedRuns: SplitResult[];
@@ -262,11 +262,11 @@ export function AccuracyChart({ defaultSplit, seedRuns, candidateLabel, baseline
                   width="10"
                   height="10"
                   fill={S2}
-                  stroke="var(--card)"
+                  stroke="var(--background)"
                   strokeWidth="2"
                   transform={`rotate(45 ${cx + off} ${y(b)})`}
                 />
-                <circle cx={cx - off} cy={y(c)} r="6" fill={S1} stroke="var(--card)" strokeWidth="2" />
+                <circle cx={cx - off} cy={y(c)} r="6" fill={S1} stroke="var(--background)" strokeWidth="2" />
                 <text x={cx} y={height - m.bottom + 18} textAnchor="middle" fontSize="11" fill={MUTED}>
                   {splitLabel(run, i === 0, narrow)}
                 </text>
@@ -314,7 +314,7 @@ export function NoiseChart({ noise, candidateLabel, baselineLabel }: {
       legend={
         <Legend
           items={[
-            { swatch: <circle cx="9" cy="6" r="4.25" fill="var(--card)" stroke={INK} strokeWidth="1.5" />, label: "Clean test data" },
+            { swatch: <circle cx="9" cy="6" r="4.25" fill="var(--background)" stroke={INK} strokeWidth="1.5" />, label: "Clean test data" },
             { swatch: <circle cx="9" cy="6" r="5" fill={INK} />, label: `Mean of ${noise.n_draws} noisy draws` },
             { swatch: <line x1="1" y1="6" x2="17" y2="6" stroke={INK} strokeWidth="2" />, label: "Lowest to highest draw" },
           ]}
@@ -347,8 +347,8 @@ export function NoiseChart({ noise, candidateLabel, baselineLabel }: {
                   {pp(r.delta_pp)} under noise
                 </text>
                 <line x1={x(r.noisy_min * 100)} x2={x(r.noisy_max * 100)} y1={cy} y2={cy} stroke={r.color} strokeWidth="2" strokeLinecap="round" />
-                <circle cx={x(r.noisy_mean_accuracy * 100)} cy={cy} r="6" fill={r.color} stroke="var(--card)" strokeWidth="2" />
-                <circle cx={x(r.clean_accuracy * 100)} cy={cy} r="5.25" fill="var(--card)" stroke={r.color} strokeWidth="2" />
+                <circle cx={x(r.noisy_mean_accuracy * 100)} cy={cy} r="6" fill={r.color} stroke="var(--background)" strokeWidth="2" />
+                <circle cx={x(r.clean_accuracy * 100)} cy={cy} r="5.25" fill="var(--background)" stroke={r.color} strokeWidth="2" />
                 <rect x={m.left} y={cy - rowH / 2} width={width - m.left - m.right} height={rowH} fill="transparent">
                   <title>
                     {`${r.name}: clean ${pct(r.clean_accuracy, 2)}; noisy mean ${pct(r.noisy_mean_accuracy, 2)} (lowest ${pct(

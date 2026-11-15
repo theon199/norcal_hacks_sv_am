@@ -45,7 +45,7 @@ export function validateDraft(summary: DatasetSummary, draft: ClaimDraft): strin
   return null;
 }
 
-const field = "field";
+const field = "mt-1 w-full rounded-md border border-line bg-background px-3 py-2 text-sm";
 const label = "block text-sm font-medium";
 
 export function ClaimBuilder({
@@ -64,18 +64,9 @@ export function ClaimBuilder({
   const usedCount = featureColumns.filter((c) => !draft.excluded.includes(c.name)).length;
 
   return (
-    <section className="card p-5 sm:p-6">
-      <figure className="border-l-2 border-accent pl-4">
-        <figcaption className="text-xs text-muted">The claim under test</figcaption>
-        <blockquote className="mt-1 max-w-3xl font-serif text-xl leading-snug sm:text-2xl">
-          {claimSentence(draft.candidate, Number(draft.threshold))}
-        </blockquote>
-        <p className="mt-2 text-xs text-muted">
-          Primary metric: accuracy. Balanced accuracy and F1 are reported alongside.
-        </p>
-      </figure>
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="rounded-lg border border-line p-5">
+      <h2 className="text-lg font-medium">State the claim</h2>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <label className={label}>
           Target column
           <select className={field} value={draft.target} onChange={(e) => set({ target: e.target.value })}>
@@ -103,9 +94,7 @@ export function ClaimBuilder({
         </label>
         <div className={label}>
           Baseline model
-          <p className={`${field} bg-surface text-muted`} title="The baseline is always the other model">
-            {MODEL_LABELS[otherModel(draft.candidate)]}
-          </p>
+          <p className={`${field} bg-surface text-muted`}>{MODEL_LABELS[otherModel(draft.candidate)]}</p>
         </div>
         <label className={label}>
           Claimed improvement (pp)
@@ -127,8 +116,15 @@ export function ClaimBuilder({
         </p>
       )}
 
-      <details className="mt-6 border-t border-line pt-4">
-        <summary className="cursor-pointer text-sm font-semibold">
+      <blockquote className="mt-5 rounded-md border-l-4 border-accent bg-accent-soft px-4 py-3 text-sm">
+        {claimSentence(draft.candidate, Number(draft.threshold))}
+        <span className="mt-1 block text-xs text-muted">
+          Primary metric: accuracy. Balanced accuracy and F1 are reported alongside.
+        </span>
+      </blockquote>
+
+      <details className="mt-5">
+        <summary className="cursor-pointer text-sm font-medium">
           Originally reported result <span className="font-normal text-muted">(optional, shown for context only)</span>
         </summary>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -169,30 +165,32 @@ export function ClaimBuilder({
       </details>
 
       {draft.target && (
-        <div className="mt-4 border-t border-line pt-4">
-          <h3 className="text-sm font-semibold">
+        <div className="mt-5">
+          <h3 className="text-sm font-medium">
             Features <span className="font-normal text-muted">({usedCount} used; untick to exclude)</span>
           </h3>
-          <ul className="mt-2 grid gap-x-4 sm:grid-cols-2 lg:grid-cols-3">
-            {featureColumns.map((c) => {
-              const used = !draft.excluded.includes(c.name);
-              return (
-                <li key={c.name}>
-                  <label className="-mx-2 flex cursor-pointer items-start gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-surface">
-                    <input type="checkbox" className="mt-1" checked={used} onChange={() => toggle(c.name)} />
-                    <span className="min-w-0">
-                      <span className={`break-all font-mono text-xs ${used ? "" : "text-muted line-through"}`}>{c.name}</span>{" "}
-                      <span className="text-xs text-muted">{c.kind}</span>
-                      {c.flags.map((f) => (
-                        <span key={f} className="tag tag-warn ml-1">
-                          {FLAG_LABELS[f]}
-                        </span>
-                      ))}
-                    </span>
-                  </label>
-                </li>
-              );
-            })}
+          <ul className="mt-2 grid gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+            {featureColumns.map((c) => (
+              <li key={c.name}>
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={!draft.excluded.includes(c.name)}
+                    onChange={() => toggle(c.name)}
+                  />
+                  <span className="min-w-0">
+                    <span className="break-all font-mono text-xs">{c.name}</span>{" "}
+                    <span className="text-xs text-muted">{c.kind}</span>
+                    {c.flags.map((f) => (
+                      <span key={f} className="ml-1 rounded bg-warn-soft px-1 text-xs text-warn">
+                        {FLAG_LABELS[f]}
+                      </span>
+                    ))}
+                  </span>
+                </label>
+              </li>
+            ))}
           </ul>
         </div>
       )}
